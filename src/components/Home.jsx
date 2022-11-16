@@ -11,7 +11,6 @@ import {
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3001", { transports: ["websocket"] });
-socket.removeAllListeners()
 
 const Home = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -31,8 +30,9 @@ const Home = () => {
       createdAt: new Date(),
     };
     socket.emit("sendMessage", { message: newMessage });
+    // PUT ARRAY SPREAD INTO FUCTION AND THEN JUST CALL FUNCTION IN CALLBACK WITHIN SET CHAT HISTORY
     setChatHistory([...chatHistory, newMessage]);
-    setMessage("")
+    setMessage("");
   };
 
   useEffect(() => {
@@ -44,16 +44,22 @@ const Home = () => {
           setOnlineUsers(onlineUsersList);
         });
         socket.on("sentMessage", (receivedMessage) => {
-            setChatHistory((chatHistory) => [
-              ...chatHistory,
-              receivedMessage.message,
-            ]);
+          setChatHistory((chatHistory) => [
+            ...chatHistory,
+            receivedMessage.message,
+          ]);
 
           console.log("DID ME sentMessage");
         });
       });
     });
   });
+
+  useEffect(() => {
+    return () => {
+      socket.removeAllListeners();
+    };
+  }, []);
 
   return (
     <Container fluid>
@@ -97,7 +103,7 @@ const Home = () => {
             <Form
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log("form triggered")
+                console.log("form triggered");
                 sendMessage();
               }}
             >
