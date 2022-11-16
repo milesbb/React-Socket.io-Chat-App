@@ -1,4 +1,4 @@
-import { formatDistance, subDays } from "date-fns";
+import { formatDistance } from "date-fns";
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -11,6 +11,7 @@ import {
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3001", { transports: ["websocket"] });
+socket.removeAllListeners()
 
 const Home = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -42,10 +43,12 @@ const Home = () => {
           setOnlineUsers(onlineUsersList);
         });
         socket.on("sentMessage", (receivedMessage) => {
-          setChatHistory((chatHistory) => [
-            ...chatHistory,
-            receivedMessage.message,
-          ]);
+            setChatHistory((chatHistory) => [
+              ...chatHistory,
+              receivedMessage.message,
+            ]);
+
+          console.log("DID ME sentMessage");
         });
       });
     });
@@ -81,7 +84,7 @@ const Home = () => {
                   </Col>
                   <Col md={4}>
                     sent{" "}
-                    {formatDistance(message.createdAt, new Date(), {
+                    {formatDistance(new Date(message.createdAt), new Date(), {
                       addSuffix: true,
                     })}
                   </Col>
@@ -93,6 +96,7 @@ const Home = () => {
             <Form
               onSubmit={(e) => {
                 e.preventDefault();
+                console.log("form triggered")
                 sendMessage();
               }}
             >
