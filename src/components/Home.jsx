@@ -32,6 +32,7 @@ const Home = () => {
     };
     socket.emit("sendMessage", { message: newMessage });
     setChatHistory([...chatHistory, newMessage]);
+    setMessage("")
   };
 
   useEffect(() => {
